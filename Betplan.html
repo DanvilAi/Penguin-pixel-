@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Penguin Pixel Replica</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #1a1a2e;
+      color: #ffffff;
+      min-height: 100vh;
+      padding-bottom: 80px;
+      overflow-x: hidden;
+    }
+
+    /* Header */
+    header {
+      background: #21213e;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .menu {
+      font-size: 24px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .menu:hover {
+      transform: scale(1.1);
+    }
+
+    .balance {
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    .balance strong {
+      font-size: 24px;
+      color: #f0b90b;
+    }
+
+    .lang {
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .lang i {
+      margin-right: 8px;
+    }
+
+    .lang-options {
+      display: none;
+      position: absolute;
+      top: 30px;
+      right: 0;
+      background: #2a2a4a;
+      border-radius: 8px;
+      padding: 10px;
+      z-index: 100;
+    }
+
+    .lang-options div {
+      padding: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .lang-options div:hover {
+      background: #3a3a5a;
+    }
+
+    .lang:hover .lang-options {
+      display: block;
+    }
+
+    /* Main Section */
+    .main {
+      position: relative;
+      text-align: center;
+      padding: 170px 20px;
+      color: #ffffff;
+      background: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?fit=crop&w=1500&q=80') no-repeat center center;
+      background-size: cover;
+      height: 400px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      border-bottom: 1px solid #2a2a4a;
+    }
+
+    .main h2 {
+      margin: 0 0 15px;
+      font-size: 28px;
+      color: #f0b90b;
+      font-weight: 600;
+    }
+
+    .main .date {
+      font-size: 48px;
+      font-weight: 700;
+      margin: 10px 0;
+    }
+
+    .main p {
+      font-size: 16px;
+      background: rgba(0, 0, 0, 0.7);
+      display: inline-block;
+      padding: 10px 15px;
+      border-radius: 8px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: fixed;
+      right: 20px;
+      top: 80px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 999;
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar.hidden {
+      transform: translateX(100px);
+    }
+
+    .sidebar div {
+      background: #2a2a4a;
+      padding: 12px;
+      border-radius: 12px;
+      text-align: center;
+      font-size: 14px;
+      width: 60px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+    }
+
+    .sidebar div:hover {
+      background: #3a3a5a;
+      transform: translateY(-2px);
+    }
+
+    .sidebar div i {
+      font-size: 18px;
+      margin-bottom: 6px;
+    }
+
+    .sidebar .mining-counter {
+      font-size: 12px;
+      margin-top: 4px;
+      color: #f0b90b;
+    }
+
+    /* Penguin Pixel */
+    .penguin-pixel {
+      background: #21213e;
+      padding: 20px;
+      max-width: 800px;
+      margin: 20px auto;
+      border-radius: 12px;
+    }
+
+    .penguin-pixel h3 {
+      font-size: 24px;
+      color: #f0b90b;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .penguin-pixel p {
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 15px;
+      color: #ddd;
+    }
+
+    .penguin-pixel .highlight {
+      background: #2a2a4a;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #ffffff;
+      margin-bottom: 15px;
+    }
+
+    .penguin-pixel .cta {
+      display: inline-block;
+      background: #f0b90b;
+      color: #1a1a2e;
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+
+    .penguin-pixel .cta:hover {
+      background: #d4a017;
+    }
+
+    /* Tap Wheel */
+    .tap-wheel {
+      display: none;
+      background: #21213e;
+      padding: 20px;
+      max-width: 600px;
+      margin: 20px auto;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .tap-wheel h3 {
+      font-size: 24px;
+      color: #f0b90b;
+      margin-bottom: 20px;
+    }
+
+    .wheel-container {
+      position: relative;
+      width: 200px;
+      height: 200px;
+      margin: 0 auto;
+      cursor: pointer;
+      perspective: 1000px;
+    }
+
+    .wheel {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: radial-gradient(circle, #b39fe6 0%, #2a2a4a 70%);
+      border: 5px solid #f0b90b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 600;
+      color: #ffffff;
+      position: relative;
+      transition: transform 0.5s ease;
+      animation: glow 2s infinite;
+      box-shadow: 0 0 20px rgba(240, 185, 11, 0.5);
+    }
+
+    .wheel.tapped {
+      animation: spin 1s ease-out, scale 0.3s ease;
+    }
+
+    .wheel i {
+      font-size: 48px;
+      color: #f0b90b;
+    }
+
+    @keyframes glow {
+      0% {
+        box-shadow: 0 0 10px rgba(240, 185, 11, 0.5);
+      }
+      50% {
+        box-shadow: 0 0 30px rgba(240, 185, 11, 0.8);
+      }
+      100% {
+        box-shadow: 0 0 10px rgba(240, 185, 11, 0.5);
+      }
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg) scale(1);
+      }
+      100% {
+        transform: rotate(360deg) scale(1);
+      }
+    }
+
+    @keyframes scale {
+      0% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.2);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .particles {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .particle {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: #f0b90b;
+      border-radius: 50%;
+      opacity: 0.8;
+      animation: burst 0.5s ease-out forwards;
+    }
+
+    @keyframes burst {
+      0% {
+        transform: translate(100px, 100px) scale(1);
+        opacity: 0.8;
+      }
+      100% {
+        transform: translate(100px, 100px) translate(var(--x), var(--y)) scale(0);
+        opacity: 0;
+      }
+    }
+
+    .tap-counter {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #b39fe6;
+    }
+
+    /* Custom Alert Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background: #2a2a4a;
+      padding: 20px;
+      border-radius: 12px;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateY(-50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .modal-content h3 {
+      font-size: 20px;
+      color: #f0b90b;
+      margin-bottom: 15px;
+    }
+
+    .modal-content p {
+      font-size: 16px;
+      color: #ddd;
+      margin-bottom: 20px;
+    }
+
+    .modal-content button {
+      background: #b39fe6;
+      color: #1a1a2e;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .modal-content button:hover {
+      background: #a58ed6;
+    }
+
+    /* Footer */
+    .footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #21213e;
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 0;
+      border-top: 1px solid #3a3a5a;
+      z-index: 1000;
+    }
+
+    .footer-item {
+      color: #ffffff;
+      font-size: 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: color 0.2s;
+      position: relative;
+    }
+
+    .footer-item.active {
+      color: #b39fe6;
+    }
+
+    .footer-item i {
+      display: block;
+      font-size: 22px;
+      margin-bottom: 4px;
+    }
+
+    .footer-item:hover .tooltip {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .tooltip {
+      visibility: hidden;
+      opacity: 0;
+      position: absolute;
+      bottom: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #2a2a4a;
+      color: #ffffff;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      white-space: nowrap;
+      transition: opacity 0.2s, visibility 0.2s;
+      z-index: 10;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .main {
+        height: 300px;
+      }
+
+      .main .date {
+        font-size: 36px;
+      }
+
+      .sidebar {
+        right: 10px;
+        top: 60px;
+      }
+
+      .sidebar div {
+        width: 50px;
+        font-size: 12px;
+      }
+
+      .penguin-pixel, .tap-wheel {
+        padding: 15px;
+      }
+
+      .wheel-container {
+        width: 150px;
+        height: 150px;
+      }
+
+      .wheel i {
+        font-size: 36px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      header {
+        padding: 10px 15px;
+      }
+
+      .balance strong {
+        font-size: 20px;
+      }
+
+      .main h2 {
+        font-size: 24px;
+      }
+
+      .main p {
+        font-size: 14px;
+      }
+
+      .penguin-pixel h3, .tap-wheel h3 {
+        font-size: 20px;
+      }
+
+      .footer-item {
+        font-size: 10px;
+      }
+
+      .footer-item i {
+        font-size: 20px;
+      }
+
+      .sidebar .mining-counter {
+        font-size: 10px;
+      }
+
+      .modal-content {
+        padding: 15px;
+      }
+
+      .modal-content h3 {
+        font-size: 18px;
+      }
+
+      .modal-content p {
+        font-size: 14px;
+      }
+
+      .modal-content button {
+        padding: 8px 16px;
+        font-size: 14px;
+      }
+
+      .wheel-container {
+        width: 120px;
+        height: 120px;
+      }
+
+      .wheel i {
+        font-size: 30px;
+      }
+
+      .tap-counter {
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="menu" onclick="toggleSidebar()"><i class="fas fa-bars"></i></div>
+    <div class="balance"><strong id="pxl-balance">0.</strong>000 PXL</div>
+    <div class="lang">
+      <i class="fas fa-globe"></i> <span id="current-lang">EN</span>
+      <div class="lang-options">
+        <div onclick="changeLanguage('EN')">EN</div>
+        <div onclick="changeLanguage('ES')">ES</div>
+        <div onclick="changeLanguage('FR')">FR</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="main" id="main-content">
+    <h2><i class="fas fa-circle-notch"></i> Ecosystem Announcement</h2>
+    <div class="date">5.14.25</div>
+    <p><strong>@PxlCoreTeam</strong> <br>A Penguin Pixel ecosystem is a strong project that  will be released soon Tune in to find out what's coming next!</p>
+  </div>
+
+  <div class="sidebar" id="sidebar">
+    <div onclick="showModal('Chat', 'Chat interface coming soon!')"><i class="fas fa-comment-alt"></i>Chat</div>
+    <div onclick="showModal('Shield', 'Shield feature coming soon!')"><i class="fas fa-shield-alt"></i>0%</div>
+    <div onclick="showModal('Friends', 'Friends feature coming soon!')"><i class="fas fa-user-friends"></i>0/0</div>
+    <div id="mining-btn" onclick="toggleMining()">
+      <i class="fas fa-bolt"></i>
+      <span>1 PXL/h</span>
+      <span class="mining-counter" id="mining-counter">00:00</span>
+    </div>
+    <div onclick="copyInviteLink()"><i class="fas fa-share"></i>Invite</div>
+  </div>
+
+  <div class="penguin-pixel" id="penguin-content">
+    <h3>Penguin Pixel: Mascot</h3>
+    <p>Penguin Pixel is the beloved mascot of the Penguin Pixel Network, embodying the spirit of accessibility, community, and innovation. Designed as a pixelated, friendly penguin, this digital character represents the inclusive nature of the Penguin Pixel Network, a cryptocurrency platform that allows anyone with a smartphone to mine and engage with digital assets.</p>
+    <div class="highlight">
+      <strong>Why a Penguin?</strong> Penguins are known for their resilience, teamwork, and adaptability—qualities that resonate with the Penguin Pixel Network's mission to create a decentralized, user-friendly financial ecosystem. The pixelated design nods to the digital and blockchain world, blending retro gaming aesthetics with modern technology.
+    </div>
+    <p>Penguin Pixel is more than just a mascot. It's a collectible digital asset available as a non-fungible token (NFT) on the Penguin Pixel Network's Global Market. Users can earn, trade, or purchase unique Penguin Pixel NFTs, each with distinct traits, such as special hats, accessories, or backgrounds. These NFTs can be used in the ecosystem for staking, rewards, or as profile avatars to showcase your involvement in the community.</p>
+    <p>Additionally, Penguin Pixel plays a key role in the Penguin Pixel Network's educational initiatives. Through interactive tutorials and gamified challenges, Penguin Pixel guides new users on how to mine PXL, secure their wallets, and participate in the ecosystem. The mascot also appears in community events, social media campaigns, and exclusive merchandise, fostering a sense of unity among Pioneers worldwide.</p>
+    <a href="#" class="cta" onclick="showModal('NFTs', 'Explore Penguin Pixel NFTs in the Market!')">Discover Penguin Pixel NFTs</a>
+  </div>
+
+  <div class="tap-wheel" id="tap-wheel">
+    <h3>Tap to Earn</h3>
+    <div class="wheel-container" onclick="tapWheel()">
+      <div class="wheel" id="wheel"><i class="fas fa-star"></i></div>
+      <div class="particles" id="particles"></div>
+    </div>
+    <div class="tap-counter">Earn 0.5 PXL per tap!</div>
+  </div>
+
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <h3 id="modal-title"></h3>
+      <p id="modal-message"></p>
+      <button onclick="closeModal()">OK</button>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-item active" onclick="navigate('home')"><i class="fas fa-home"></i><span>Home</span></div>
+    <div class="footer-item" onclick="navigate('wallet')"><i class="fas fa-wallet"></i><span>Wallet</span><div class="tooltip">Coming Soon</div></div>
+    <div class="footer-item" onclick="navigate('market')"><i class="fas fa-store"></i><span>Market</span><div class="tooltip">Coming Soon</div></div>
+    <div class="footer-item" onclick="navigate('tap')"><i class="fas fa-hand-pointer"></i><span>Tap</span></div>
+  </div>
+
+  <script>
+    const USER_ID = 'user123';
+    const MINING_PERIOD_SECONDS = 24 * 60 * 60; // 24 hours in seconds
+
+    let userData = { minedTokens: 0, miningStartTime: 0 };
+    let isMining = false;
+    let miningInterval = null;
+    let miningSeconds = 0;
+    const miningRatePerHour = 1;
+    const miningRatePerSecond = miningRatePerHour / 3600;
+
+    // Local Storage Functions
+    function loadUserData() {
+      const data = localStorage.getItem(`pxl_user_${USER_ID}`);
+      if (data) {
+        userData = JSON.parse(data);
+        userData.minedTokens = userData.minedTokens || 0;
+        userData.miningStartTime = userData.miningStartTime || 0;
+      }
+      updateBalanceDisplay();
+      // Resume mining if it was active
+      if (userData.miningStartTime > 0) {
+        const elapsed = (Date.now() - userData.miningStartTime) / 1000;
+        if (elapsed < MINING_PERIOD_SECONDS) {
+          startMining(userData.miningStartTime);
+        } else {
+          userData.miningStartTime = 0;
+          saveUserData();
+        }
+      }
+    }
+
+    function saveUserData() {
+      localStorage.setItem(`pxl_user_${USER_ID}`, JSON.stringify(userData));
+      updateBalanceDisplay();
+    }
+
+    function updateBalanceDisplay() {
+      document.getElementById('pxl-balance').textContent = userData.minedTokens.toFixed(3);
+    }
+
+    // Navigation
+    function navigate(page) {
+      document.querySelectorAll('.footer-item').forEach(item => item.classList.remove('active'));
+      event.currentTarget.classList.add('active');
+
+      const mainContent = document.getElementById('main-content');
+      const penguinContent = document.getElementById('penguin-content');
+      const tapWheel = document.getElementById('tap-wheel');
+      const sidebar = document.getElementById('sidebar');
+
+      mainContent.style.display = 'none';
+      penguinContent.style.display = 'none';
+      tapWheel.style.display = 'none';
+      sidebar.style.display = 'flex';
+
+      if (page === 'home') {
+        mainContent.style.display = 'flex';
+        penguinContent.style.display = 'block';
+      } else if (page === 'wallet' || page === 'market') {
+        showModal('Coming Soon', `${page.charAt(0).toUpperCase() + page.slice(1)} feature is coming soon!`);
+      } else if (page === 'tap') {
+        tapWheel.style.display = 'block';
+        sidebar.style.display = 'none';
+      }
+    }
+
+    // Sidebar Functions
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('hidden');
+    }
+
+    function changeLanguage(lang) {
+      document.getElementById('current-lang').textContent = lang;
+      console.log(`Language changed to ${lang}`);
+    }
+
+    function copyInviteLink() {
+      const inviteLink = 'https://penguinpixel.network/invite?code=yourcode';
+      navigator.clipboard.writeText(inviteLink).then(() => {
+        showModal('Invite Link', 'Invite link copied to clipboard!');
+      });
+    }
+
+    // Mining Functions
+    function toggleMining() {
+      if (isMining) {
+        stopMining();
+      } else {
+        startMining();
+      }
+    }
+
+    function startMining(startTime = Date.now()) {
+      isMining = true;
+      userData.miningStartTime = startTime;
+      miningSeconds = Math.floor((Date.now() - startTime) / 1000);
+      initialMinedTokens = userData.minedTokens;
+      miningInterval = setInterval(updateMining, 100);
+      document.getElementById('mining-btn').classList.add('active');
+      saveUserData();
+    }
+
+    function stopMining() {
+      isMining = false;
+      userData.miningStartTime = 0;
+      document.getElementById('mining-counter').textContent = '00:00';
+      document.getElementById('mining-btn').classList.remove('active');
+      clearInterval(miningInterval);
+      saveUserData();
+      showModal('Mining Complete', '24-hour mining period has ended!');
+    }
+
+    function updateMining() {
+      const now = Date.now();
+      const elapsedSeconds = (now - userData.miningStartTime) / 1000;
+
+      if (elapsedSeconds >= MINING_PERIOD_SECONDS) {
+        stopMining();
+        return;
+      }
+
+      const earnedPxl = elapsedSeconds * miningRatePerSecond;
+      userData.minedTokens = initialMinedTokens + earnedPxl;
+      saveUserData();
+
+      miningSeconds = Math.floor(elapsedSeconds);
+      const minutes = Math.floor(miningSeconds / 60);
+      const seconds = miningSeconds % 60;
+      const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      document.getElementById('mining-counter').textContent = formattedTime;
+    }
+
+    // Tap Wheel Functions
+    function tapWheel() {
+      userData.minedTokens += 0.5;
+      saveUserData();
+
+      const wheel = document.getElementById('wheel');
+      wheel.classList.add('tapped');
+      setTimeout(() => wheel.classList.remove('tapped'), 1000);
+
+      createParticles();
+    }
+
+    function createParticles() {
+      const particlesContainer = document.getElementById('particles');
+      particlesContainer.innerHTML = '';
+
+      for (let i = 0; i < 12; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        const angle = Math.random() * 360;
+        const distance = 50 + Math.random() * 50;
+        particle.style.setProperty('--x', `${Math.cos(angle * Math.PI / 180) * distance}px`);
+        particle.style.setProperty('--y', `${Math.sin(angle * Math.PI / 180) * distance}px`);
+        particlesContainer.appendChild(particle);
+      }
+
+      setTimeout(() => {
+        particlesContainer.innerHTML = '';
+      }, 500);
+    }
+
+    // Modal Functions
+    function showModal(title, message) {
+      document.getElementById('modal-title').textContent = title;
+      document.getElementById('modal-message').textContent = message;
+      document.getElementById('modal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('modal').style.display = 'none';
+    }
+
+    // Initialize
+    window.onload = () => {
+      loadUserData();
+      navigate('home');
+    };
+  </script>
+</body>
+</html>
