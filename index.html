@@ -2,11 +2,30 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Penguin Pixel Replica</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <title>MUHANDU ICG - ID Card Generator</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&display=swap');
+
+    :root {
+      --primary-color: #8C1515;
+      --secondary-color: #2E2D29;
+      --light-bg: #f5f7fa;
+      --card-bg: #FDFDF6;
+      --app-bg: #f8f6f1;
+      --gold-accent: #D2A500;
+      --border-radius: 8px;
+      --shadow: 0 4px 12px rgba(0,0,0,0.15);
+      --gradient-bg: linear-gradient(135deg, #FDFDF6 0%, #F5F5F0 100%);
+      --name-font-size: 0.7rem;
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -14,882 +33,2085 @@
     }
 
     body {
-      font-family: 'Inter', sans-serif;
-      background: #1a1a2e;
-      color: #ffffff;
+      font-family: 'Source Sans Pro', sans-serif;
+      background-color: var(--app-bg);
       min-height: 100vh;
-      padding-bottom: 80px;
-      overflow-x: hidden;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      color: var(--secondary-color);
     }
 
-    /* Header */
-    header {
-      background: #21213e;
+    .app-header {
+      background: var(--primary-color);
+      color: white;
       padding: 12px 20px;
+      box-shadow: var(--shadow);
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    }
-
-    .menu {
-      font-size: 24px;
-      cursor: pointer;
-      transition: transform 0.3s ease;
-    }
-
-    .menu:hover {
-      transform: scale(1.1);
-    }
-
-    .balance {
-      font-size: 16px;
-      font-weight: 500;
-    }
-
-    .balance strong {
-      font-size: 24px;
-      color: #f0b90b;
-    }
-
-    .lang {
-      display: flex;
       align-items: center;
-      font-size: 14px;
-      cursor: pointer;
-      position: relative;
+      border-bottom: 3px solid var(--gold-accent);
     }
 
-    .lang i {
-      margin-right: 8px;
-    }
-
-    .lang-options {
-      display: none;
-      position: absolute;
-      top: 30px;
-      right: 0;
-      background: #2a2a4a;
-      border-radius: 8px;
-      padding: 10px;
-      z-index: 100;
-    }
-
-    .lang-options div {
-      padding: 8px;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .lang-options div:hover {
-      background: #3a3a5a;
-    }
-
-    .lang:hover .lang-options {
-      display: block;
-    }
-
-    /* Main Section */
-    .main {
-      position: relative;
-      text-align: center;
-      padding: 170px 20px;
-      color: #ffffff;
-      background: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?fit=crop&w=1500&q=80') no-repeat center center;
-      background-size: cover;
-      height: 400px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      border-bottom: 1px solid #2a2a4a;
-    }
-
-    .main h2 {
-      margin: 0 0 15px;
-      font-size: 28px;
-      color: #f0b90b;
-      font-weight: 600;
-    }
-
-    .main .date {
-      font-size: 48px;
+    .app-header h1 {
+      font-size: 1.5rem;
       font-weight: 700;
-      margin: 10px 0;
+      letter-spacing: 0.5px;
     }
 
-    .main p {
-      font-size: 16px;
-      background: rgba(0, 0, 0, 0.7);
-      display: inline-block;
-      padding: 10px 15px;
-      border-radius: 8px;
-      max-width: 600px;
-      margin: 0 auto;
+    .app-header .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
-    /* Sidebar */
+    .app-header .logo-icon {
+      font-size: 1.8rem;
+    }
+
+    .app-container {
+      display: flex;
+      flex: 1;
+      height: calc(100vh - 60px);
+    }
+
     .sidebar {
-      position: fixed;
-      right: 20px;
-      top: 80px;
+      width: 260px;
+      background: var(--secondary-color);
+      color: white;
+      padding: 20px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      z-index: 999;
-      transition: transform 0.3s ease;
+      transition: all 0.3s ease;
     }
 
-    .sidebar.hidden {
-      transform: translateX(100px);
-    }
-
-    .sidebar div {
-      background: #2a2a4a;
-      padding: 12px;
-      border-radius: 12px;
-      text-align: center;
-      font-size: 14px;
-      width: 60px;
+    .main-content {
+      flex: 1;
+      padding: 20px;
       display: flex;
       flex-direction: column;
+      overflow-y: auto;
+      background-color: var(--app-bg);
+    }
+
+    .form-section {
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+      border-top: 3px solid var(--primary-color);
+    }
+
+    .section-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--primary-color);
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .section-title i {
+      font-size: 1.3rem;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      font-weight: 600;
+      color: var(--secondary-color);
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.9rem;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-family: 'Source Sans Pro', sans-serif;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      background-color: #f9f9f9;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(140, 21, 21, 0.2);
+      outline: none;
+      background-color: white;
+    }
+
+    .photo-preview {
+      width: 120px;
+      height: 120px;
+      border-radius: 4px;
+      border: 2px solid #ddd;
+      display: flex;
       align-items: center;
       justify-content: center;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.2s;
+      overflow: hidden;
+      margin-bottom: 10px;
+      background-color: #f9f9f9;
     }
 
-    .sidebar div:hover {
-      background: #3a3a5a;
-      transform: translateY(-2px);
-    }
-
-    .sidebar div i {
-      font-size: 18px;
-      margin-bottom: 6px;
-    }
-
-    .sidebar .mining-counter {
-      font-size: 12px;
-      margin-top: 4px;
-      color: #f0b90b;
-    }
-
-    /* Penguin Pixel */
-    .penguin-pixel {
-      background: #21213e;
-      padding: 20px;
-      max-width: 800px;
-      margin: 20px auto;
-      border-radius: 12px;
-    }
-
-    .penguin-pixel h3 {
-      font-size: 24px;
-      color: #f0b90b;
-      margin-bottom: 15px;
-      text-align: center;
-    }
-
-    .penguin-pixel p {
-      font-size: 14px;
-      line-height: 1.6;
-      margin-bottom: 15px;
-      color: #ddd;
-    }
-
-    .penguin-pixel .highlight {
-      background: #2a2a4a;
-      padding: 10px;
-      border-radius: 8px;
-      font-size: 14px;
-      color: #ffffff;
-      margin-bottom: 15px;
-    }
-
-    .penguin-pixel .cta {
-      display: inline-block;
-      background: #f0b90b;
-      color: #1a1a2e;
-      padding: 10px 20px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: 600;
-      transition: background 0.2s;
-    }
-
-    .penguin-pixel .cta:hover {
-      background: #d4a017;
-    }
-
-    /* Tap Wheel */
-    .tap-wheel {
-      display: none;
-      background: #21213e;
-      padding: 20px;
-      max-width: 600px;
-      margin: 20px auto;
-      border-radius: 12px;
-      text-align: center;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    }
-
-    .tap-wheel h3 {
-      font-size: 24px;
-      color: #f0b90b;
-      margin-bottom: 20px;
-    }
-
-    .wheel-container {
-      position: relative;
-      width: 220px;
-      height: 220px;
-      margin: 0 auto;
-      cursor: pointer;
-      perspective: 1000px;
-    }
-
-    .wheel {
+    .photo-preview img {
       width: 100%;
       height: 100%;
-      border-radius: 50%;
-      background: radial-gradient(circle at 30% 30%, #ffffff 0%, #b39fe6 40%, #2a2a4a 80%);
-      border: 6px solid #f0b90b;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      transition: transform 0.3s ease;
-      box-shadow: inset 0 0 20px rgba(240, 185, 11, 0.5), 0 0 30px rgba(179, 159, 230, 0.3);
-      animation: glow 2s infinite ease-in-out;
+      object-fit: cover;
     }
 
-    .wheel::before {
+    .photo-upload-btn {
+      padding: 8px 15px;
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: 'Source Sans Pro', sans-serif;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+    }
+
+    .photo-upload-btn:hover {
+      background: #6a0f0f;
+    }
+
+    .preview-section {
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      border-top: 3px solid var(--primary-color);
+    }
+
+    .preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .preview-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--primary-color);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 8px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: 'Source Sans Pro', sans-serif;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .btn-primary {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #6a0f0f;
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
+    .btn-secondary {
+      background: #e8e8e8;
+      color: #444;
+    }
+
+    .btn-secondary:hover {
+      background: #d8d8d8;
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
+    .id-card-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 20px;
+      min-height: 220px;
+    }
+
+    .id-card {
+      width: 350px;
+      height: 220px;
+      background: var(--gradient-bg);
+      border: 1px solid rgba(0,0,0,0.1);
+      border-radius: var(--border-radius);
+      position: relative;
+      box-shadow: var(--shadow);
+      perspective: 1000px;
+      transform-style: preserve-3d;
+      transition: transform 0.6s ease;
+      display: none;
+      overflow: hidden;
+    }
+
+    .id-card.flipped {
+      transform: rotateY(180deg);
+    }
+
+    .id-card::before {
       content: '';
       position: absolute;
-      width: 240px;
-      height: 240px;
-      border-radius: 50%;
-      border: 2px dashed #f0b90b;
-      opacity: 0.4;
-      animation: rotateAura 10s linear infinite;
-    }
-
-    .wheel.tapped {
-      animation: spin 1.2s ease-out, pulse 0.4s ease;
-    }
-
-    .wheel i {
-      font-size: 60px;
-      color: #f0b90b;
-      text-shadow: 0 0 10px rgba(240, 185, 11, 0.8);
-    }
-
-    @keyframes glow {
-      0% {
-        box-shadow: inset 0 0 20px rgba(240, 185, 11, 0.5), 0 0 30px rgba(179, 159, 230, 0.3);
-      }
-      50% {
-        box-shadow: inset 0 0 30px rgba(240, 185, 11, 0.7), 0 0 50px rgba(179, 159, 230, 0.5);
-      }
-      100% {
-        box-shadow: inset 0 0 20px rgba(240, 185, 11, 0.5), 0 0 30px rgba(179, 159, 230, 0.3);
-      }
-    }
-
-    @keyframes rotateAura {
-      0% {
-        transform: rotate(0deg);
-      }
-      100% {
-        transform: rotate(360deg);
-      }
-    }
-
-    @keyframes spin {
-      0% {
-        transform: rotate(0deg);
-      }
-      100% {
-        transform: rotate(720deg);
-      }
-    }
-
-    @keyframes pulse {
-      0% {
-        transform: scale(1);
-      }
-      50% {
-        transform: scale(1.15);
-      }
-      100% {
-        transform: scale(1);
-      }
-    }
-
-    .particles {
-      position: absolute;
       top: 0;
       left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
+      right: 0;
+      height: 8px;
+      background: var(--primary-color);
+      border-top-left-radius: var(--border-radius);
+      border-top-right-radius: var(--border-radius);
     }
 
-    .particle {
+    .id-card::after {
+      content: '';
       position: absolute;
-      width: var(--size);
-      height: var(--size);
-      background: var(--color);
-      border-radius: 50%;
-      opacity: 0.9;
-      animation: burst 0.6s ease-out forwards;
-    }
-
-    @keyframes burst {
-      0% {
-        transform: translate(110px, 110px) scale(1);
-        opacity: 0.9;
-      }
-      100% {
-        transform: translate(110px, 110px) translate(var(--x), var(--y)) scale(0);
-        opacity: 0;
-      }
-    }
-
-    .tap-popup {
-      position: absolute;
-      top: -30px;
-      left: 50%;
-      transform: translateX(-50%);
-      color: #f0b90b;
-      font-size: 16px;
-      font-weight: 600;
-      text-shadow: 0 0 5px rgba(240, 185, 11, 0.8);
-      animation: floatUp 1s ease-out forwards;
-      pointer-events: none;
-    }
-
-    @keyframes floatUp {
-      0% {
-        transform: translateX(-50%) translateY(0);
-        opacity: 1;
-      }
-      100% {
-        transform: translateX(-50%) translateY(-50px);
-        opacity: 0;
-      }
-    }
-
-    .tap-counter {
-      margin-top: 20px;
-      font-size: 18px;
-      color: #b39fe6;
-      text-shadow: 0 0 5px rgba(179, 159, 230, 0.5);
-    }
-
-    /* Custom Alert Modal */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.7);
-      z-index: 2000;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .modal-content {
-      background: #2a2a4a;
-      padding: 20px;
-      border-radius: 12px;
-      max-width: 400px;
-      width: 90%;
-      text-align: center;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-      animation: slideIn 0.3s ease;
-    }
-
-    @keyframes slideIn {
-      from {
-        transform: translateY(-50px);
-        opacity: 0;
-      }
-      to {
-        transform: translateY(0);
-        opacity: 1;
-      }
-    }
-
-    .modal-content h3 {
-      font-size: 20px;
-      color: #f0b90b;
-      margin-bottom: 15px;
-    }
-
-    .modal-content p {
-      font-size: 16px;
-      color: #ddd;
-      margin-bottom: 20px;
-    }
-
-    .modal-content button {
-      background: #b39fe6;
-      color: #1a1a2e;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .modal-content button:hover {
-      background: #a58ed6;
-    }
-
-    /* Footer */
-    .footer {
-      position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
-      background: #21213e;
-      display: flex;
-      justify-content: space-around;
-      padding: 12px 0;
-      border-top: 1px solid #3a3a5a;
-      z-index: 1000;
+      height: 4px;
+      background: var(--gold-accent);
+      border-bottom-left-radius: var(--border-radius);
+      border-bottom-right-radius: var(--border-radius);
     }
 
-    .footer-item {
-      color: #ffffff;
-      font-size: 12px;
-      text-align: center;
-      cursor: pointer;
-      transition: color 0.2s;
-      position: relative;
-    }
-
-    .footer-item.active {
-      color: #b39fe6;
-    }
-
-    .footer-item i {
-      display: block;
-      font-size: 22px;
-      margin-bottom: 4px;
-    }
-
-    .footer-item:hover .tooltip {
-      visibility: visible;
-      opacity: 1;
-    }
-
-    .tooltip {
-      visibility: hidden;
-      opacity: 0;
+    .id-card-front, .id-card-back {
       position: absolute;
-      bottom: 60px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #2a2a4a;
-      color: #ffffff;
-      padding: 8px 12px;
-      border-radius: 8px;
-      font-size: 12px;
-      white-space: nowrap;
-      transition: opacity 0.2s, visibility 0.2s;
-      z-index: 10;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: var(--border-radius);
+      padding: 15px;
+      background: var(--gradient-bg);
+      overflow: hidden;
+      box-sizing: border-box;
     }
 
-    /* Responsive Design */
-    @media (max-width: 768px) {
-      .main {
-        height: 300px;
+    .id-card-back {
+      transform: rotateY(180deg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 8px;
+    }
+
+    .id-card h3 {
+      text-align: center;
+      margin: 8px 0 10px;
+      font-size: 1.2rem;
+      color: var(--primary-color);
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .id-card-back h3 {
+      font-size: 0.95rem;
+      margin: 4px 0;
+    }
+
+    .id-card-content {
+      display: grid;
+      grid-template-columns: 1fr 1.5fr;
+      gap: 8px;
+      height: calc(100% - 60px);
+      padding: 4px;
+    }
+
+    .profile {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    .profile img {
+      width: 90px;
+      height: 90px;
+      object-fit: cover;
+      border-radius: 4px;
+      border: 2px solid var(--gold-accent);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      margin-bottom: 8px;
+    }
+
+    .profile::after {
+      content: 'STUDENT';
+      background: var(--primary-color);
+      color: white;
+      padding: 3px 12px;
+      border-radius: 12px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .details {
+      font-size: 0.7rem;
+      line-height: 1.3;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-right: 4px;
+    }
+
+    .details p {
+      margin: 2px 0;
+      padding-bottom: 2px;
+      border-bottom: 1px solid rgba(0,0,0,0.1);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .details strong {
+      color: var(--secondary-color);
+      font-weight: 600;
+      display: inline-block;
+      width: 80px;
+    }
+
+    .card-name {
+      display: inline-block;
+      max-width: 145px;
+      font-size: var(--name-font-size);
+    }
+
+    .card-name.long-name {
+      white-space: normal;
+      word-wrap: break-word;
+      line-height: 1.3;
+    }
+
+    .signature {
+      position: absolute;
+      bottom: 15px;
+      right: 15px;
+      font-size: 0.8rem;
+      color: #444;
+      text-align: right;
+    }
+
+    .signature-line {
+      width: 80px;
+      height: 1px;
+      background: #000;
+      margin-top: 5px;
+    }
+
+    .stamp {
+      position: absolute;
+      bottom: 15px;
+      left: 15px;
+      width: 50px;
+      height: 50px;
+      opacity: 0.9;
+      border: 1px solid rgba(0,0,0,0.1);
+      border-radius: 4px;
+      object-fit: contain;
+    }
+
+    .id-number {
+      position: absolute;
+      bottom: 10px;
+      left: 15px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.8rem;
+      letter-spacing: 1px;
+      color: var(--secondary-color);
+      font-weight: 600;
+    }
+
+    .id-card-footer {
+      position: absolute;
+      bottom: 10px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-size: 0.7rem;
+      color: #666;
+      letter-spacing: 0.5px;
+      opacity: 0.8;
+    }
+
+    .id-card::before {
+      content: 'MUHANDU';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-45deg);
+      font-size: 2rem;
+      color: rgba(140, 21, 21, 0.1);
+      font-weight: 700;
+      z-index: 0;
+    }
+
+    .nav-menu {
+      list-style: none;
+      margin-top: 20px;
+    }
+
+    .nav-item {
+      margin-bottom: 5px;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      padding: 10px 12px;
+      border-radius: 4px;
+      color: #ddd;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      gap: 10px;
+      font-weight: 500;
+    }
+
+    .nav-link:hover, .nav-link.active {
+      background-color: rgba(255,255,255,0.1);
+      color: white;
+    }
+
+    .nav-link i {
+      font-size: 1.2rem;
+    }
+
+    .user-profile {
+      margin-top: auto;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: var(--gold-accent);
+      color: var(--secondary-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+
+    .user-info {
+      flex: 1;
+    }
+
+    .user-name {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: white;
+    }
+
+    .user-role {
+      font-size: 0.75rem;
+      color: #aaa;
+    }
+
+    .qr-code {
+      width: 120px;
+      height: 120px;
+      margin: 6px auto;
+      background: white;
+      padding: 5px;
+      border: 1px solid rgba(0,0,0,0.1);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .qr-code canvas {
+      width: 110px;
+      height: 110px;
+      display: block;
+    }
+
+    .flip-btn {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      background: rgba(0,0,0,0.1);
+      border: none;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--secondary-color);
+      transition: all 0.3s ease;
+    }
+
+    .flip-btn:hover {
+      background: rgba(0,0,0,0.2);
+    }
+
+    .seal {
+      width: 70px;
+      height: 70px;
+      margin: 0 auto 6px;
+      background: var(--primary-color);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-align: center;
+      line-height: 1.2;
+      padding: 8px;
+      border: 2px solid var(--gold-accent);
+    }
+
+    .student-list {
+      max-height: 200px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 10px;
+      background: #f9f9f9;
+    }
+
+    .student-list-item {
+      padding: 8px 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border-radius: 4px;
+      margin-bottom: 5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .student-list-item:hover {
+      background: #e0e0e0;
+    }
+
+    .student-list-item.selected {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .student-id {
+      font-size: 0.85rem;
+      color: #666;
+      min-width: 80px;
+      text-align: right;
+    }
+
+    .student-list-item.selected .student-id {
+      color: #ddd;
+    }
+
+    .input-mode-toggle {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .input-mode-toggle label {
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--secondary-color);
+      font-size: 0.9rem;
+    }
+
+    .input-mode-toggle input[type="radio"] {
+      margin-right: 5px;
+    }
+
+    .student-checkbox {
+      margin-right: 8px;
+    }
+
+    .select-all-container {
+      padding: 8px 12px;
+      background: #f0f0f0;
+      border-bottom: 1px solid #ddd;
+      margin-bottom: 5px;
+    }
+
+    .photo-upload-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: #e0e0e0;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 10px;
+      display: none;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--primary-color);
+      width: 0;
+      transition: width 0.3s ease;
+    }
+
+    .loading-spinner {
+      display: none;
+      text-align: center;
+      padding: 15px;
+      font-size: 1rem;
+      color: var(--primary-color);
+      font-weight: 600;
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+    }
+
+    .loading-spinner i {
+      font-size: 1.5rem;
+      margin-right: 8px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
+
+    @media print {
+      body * {
+        visibility: hidden;
       }
 
-      .main .date {
-        font-size: 36px;
+      .id-card-container, .id-card-container * {
+        visibility: visible;
+      }
+
+      .id-card-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        transform: none;
+        box-shadow: none;
+        margin: 0;
+      }
+
+      .action-buttons, .flip-btn {
+        display: none !important;
+      }
+
+      .id-card {
+        display: block !important;
+        box-shadow: none !important;
+        border: 1px solid #ccc !important;
+        margin: 0 auto !important;
+        page-break-after: always;
+        width: 92mm !important;
+        height: 58mm !important;
+        transform: none !important;
+      }
+
+      .id-card-front, .id-card-back {
+        position: relative !important;
+        transform: none !important;
+        backface-visibility: visible !important;
+        display: block !important;
+        page-break-after: always;
+        width: 100% !important;
+        height: 100% !important;
+      }
+
+      .id-card-back {
+        margin-top: 20mm;
+      }
+
+      .qr-code canvas {
+        width: 110px !important;
+        height: 110px !important;
+      }
+
+      .card-name {
+        font-size: var(--name-font-size) !important;
+        max-width: 145px;
+      }
+
+      .card-name.long-name {
+        white-space: normal !important;
+        word-wrap: break-word !important;
+        line-height: 1.3 !important;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .app-container {
+        flex-direction: column;
+        height: auto;
       }
 
       .sidebar {
-        right: 10px;
-        top: 60px;
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #e0e0e0;
       }
 
-      .sidebar div {
-        width: 50px;
-        font-size: 12px;
+      .form-grid {
+        grid-template-columns: 1fr;
       }
 
-      .penguin-pixel, .tap-wheel {
-        padding: 15px;
+      .preview-header {
+        flex-direction: column;
+        align-items: flex-start;
       }
 
-      .wheel-container {
-        width: 160px;
-        height: 160px;
+      .action-buttons {
+        justify-content: flex-start;
+        width: 100%;
       }
 
-      .wheel i {
-        font-size: 40px;
+      .id-card-container {
+        justify-content: center;
       }
 
-      .wheel::before {
-        width: 180px;
-        height: 180px;
+      .id-card {
+        width: 300px;
+        height: 188px;
+      }
+
+      .id-card h3 {
+        font-size: 1rem;
+      }
+
+      .id-card-back h3 {
+        font-size: 0.85rem;
+      }
+
+      .profile img {
+        width: 80px;
+        height: 80px;
+      }
+
+      .details {
+        font-size: 0.65rem;
+        padding-right: 4px;
+      }
+
+      .details strong {
+        width: 75px;
+      }
+
+      .card-name {
+        max-width: 120px;
+        font-size: calc(var(--name-font-size) - 0.05rem);
+      }
+
+      .card-name.long-name {
+        white-space: normal;
+        word-wrap: break-word;
+        line-height: 1.3;
+      }
+
+      .stamp {
+        width: 40px;
+        height: 40px;
+      }
+
+      .id-number {
+        font-size: 0.7rem;
+      }
+
+      .signature {
+        font-size: 0.7rem;
+      }
+
+      .signature-line {
+        width: 70px;
+      }
+
+      .qr-code {
+        width: 100px;
+        height: 100px;
+      }
+
+      .qr-code canvas {
+        width: 90px;
+        height: 90px;
+      }
+
+      .seal {
+        width: 60px;
+        height: 60px;
+        font-size: 0.6rem;
       }
     }
 
-    @media (max-width: 480px) {
-      header {
-        padding: 10px 15px;
-      }
+    @keyframes cardAppear {
+      0% { opacity: 0; transform: scale(0.9); }
+      100% { opacity: 1; transform: scale(1); }
+    }
 
-      .balance strong {
-        font-size: 20px;
-      }
+    .card-animation {
+      animation: cardAppear 0.5s ease-out forwards;
+    }
 
-      .main h2 {
-        font-size: 24px;
-      }
+    .hidden {
+      display: none;
+    }
 
-      .main p {
-        font-size: 14px;
-      }
+    .file-input-wrapper {
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
+    }
 
-      .penguin-pixel h3, .tap-wheel h3 {
-        font-size: 20px;
-      }
+    .file-input-wrapper input[type="file"] {
+      position: absolute;
+      left: 0;
+      top: 0;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
 
-      .footer-item {
-        font-size: 10px;
-      }
-
-      .footer-item i {
-        font-size: 20px;
-      }
-
-      .sidebar .mining-counter {
-        font-size: 10px;
-      }
-
-      .modal-content {
-        padding: 15px;
-      }
-
-      .modal-content h3 {
-        font-size: 18px;
-      }
-
-      .modal-content p {
-        font-size: 14px;
-      }
-
-      .modal-content button {
-        padding: 8px 16px;
-        font-size: 14px;
-      }
-
-      .wheel-container {
-        width: 120px;
-        height: 120px;
-      }
-
-      .wheel i {
-        font-size: 30px;
-      }
-
-      .wheel::before {
-        width: 140px;
-        height: 140px;
-      }
-
-      .tap-counter {
-        font-size: 16px;
-      }
-
-      .tap-popup {
-        font-size: 14px;
-      }
-
-      .particle {
-        --size: 6px;
-      }
+    .pdf-rendering .flip-btn {
+      display: none !important;
     }
   </style>
 </head>
 <body>
-  <header>
-    <div class="menu" onclick="toggleSidebar()"><i class="fas fa-bars"></i></div>
-    <div class="balance"><strong id="pxl-balance">0.</strong>000 PXL</div>
-    <div class="lang">
-      <i class="fas fa-globe"></i> <span id="current-lang">EN</span>
-      <div class="lang-options">
-        <div onclick="changeLanguage('EN')">EN</div>
-        <div onclick="changeLanguage('ES')">ES</div>
-        <div onclick="changeLanguage('FR')">FR</div>
+  <div class="app-header">
+    <div class="logo">
+      <span class="logo-icon"><i class="fas fa-id-card"></i></span>
+      <h1>MUHANDU ICG</h1>
+    </div>
+    <div class="app-version">v2.9.1</div>
+  </div>
+
+  <div class="app-container">
+    <div class="sidebar">
+      <ul class="nav-menu">
+        <li class="nav-item">
+          <a href="#" class="nav-link active">
+            <i class="fas fa-id-card"></i>
+            <span>ID Card Generator</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link">
+            <i class="fas fa-users"></i>
+            <span>MULTI IDS</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link">
+            <i class="fas fa-cog"></i>
+            <span>EASY ICG</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link">
+            <i class="fas fa-question-circle"></i>
+            <span>HELP: 0621658007 DANVIL TECH</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="user-profile">
+        <div class="user-avatar">AD</div>
+        <div class="user-info">
+          <div class="user-name">ADMIN FILL BELOW</div>
+          <div class="user-role">Administrator</div>
+        </div>
       </div>
     </div>
-  </header>
 
-  <div class="main" id="main-content">
-    <h2><i class="fas fa-circle-notch"></i> Ecosystem Announcement</h2>
-    <div class="date">5.14.25</div>
-    <p><strong>@PxlCoreTeam</strong><br>A Penguin Pixel ecosystem is a strong project that will be released soon. Tune in to find out what's coming next!</p>
-  </div>
+    <div class="main-content">
+      <div class="form-section">
+        <div class="section-title">
+          <i class="fas fa-file-excel"></i>
+          <span>Input Mode</span>
+        </div>
+        <div class="input-mode-toggle">
+          <label><input type="radio" name="inputMode" value="excel" checked> Excel Upload</label>
+          <label><input type="radio" name="inputMode" value="manual"> Manual Input</label>
+        </div>
+        <div class="form-group" id="excelInputSection">
+          <label>Upload Excel File (.xlsx, .xls)</label>
+          <div class="file-input-wrapper">
+            <button class="photo-upload-btn">
+              <i class="fas fa-upload"></i> Upload Excel
+            </button>
+            <input type="file" id="excelUpload" accept=".xlsx,.xls">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Student List</label>
+          <div class="select-all-container">
+            <label><input type="checkbox" id="selectAll"> Select All</label>
+          </div>
+          <div class="student-list" id="studentList">
+            <div class="student-list-item">No students loaded</div>
+          </div>
+        </div>
+      </div>
 
-  <div class="sidebar" id="sidebar">
-    <div onclick="showModal('Chat', 'Chat interface coming soon!')"><i class="fas fa-comment-alt"></i>Chat</div>
-    <div onclick="showModal('Shield', 'Shield feature coming soon!')"><i class="fas fa-shield-alt"></i>0%</div>
-    <div onclick="showModal('Friends', 'Friends feature coming soon!')"><i class="fas fa-user-friends"></i>0/0</div>
-    <div id="mining-btn" onclick="toggleMining()">
-      <i class="fas fa-bolt"></i>
-      <span>1 PXL/h</span>
-      <span class="mining-counter" id="mining-counter">00:00</span>
+      <div class="form-section">
+        <div class="section-title">
+          <i class="fas fa-user-edit"></i>
+          <span>Student Information</span>
+        </div>
+        
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" required placeholder="John Doe">
+          </div>
+          
+          <div class="form-group">
+            <label for="idNumber">ID Number</label>
+            <select id="idNumber" required>
+              <option value="">Select ID Number</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="issueDate">Date Issued</label>
+            <input type="date" id="issueDate" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="validDate">Valid Until</label>
+            <input type="date" id="validDate" required>
+          </div>
+        </div>
+      </div>
+      
+      <div class="form-section">
+        <div class="section-title">
+          <i class="fas fa-camera"></i>
+          <span>Photo & Stamp</span>
+        </div>
+        
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Student Photo</label>
+            <div class="photo-preview" id="photoPreview">
+              <i class="fas fa-user-circle" style="font-size: 3rem; color: #ccc;"></i>
+            </div>
+            <div class="file-input-wrapper">
+              <button class="photo-upload-btn">
+                <i class="fas fa-upload"></i> Upload Photo
+              </button>
+              <input type="file" id="photo" accept="image/*">
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label>School Stamp (Optional)</label>
+            <div class="photo-preview" id="stampPreview">
+              <i class="fas fa-stamp" style="font-size: 3rem; color: #ccc;"></i>
+            </div>
+            <div class="file-input-wrapper">
+              <button class="photo-upload-btn">
+                <i class="fas fa-upload"></i> Upload Stamp
+              </button>
+              <input type="file" id="stamp" accept="image/*">
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="preview-section">
+        <div class="preview-header">
+          <div class="preview-title">
+            <i class="fas fa-eye"></i> ID Card Preview
+          </div>
+          <div class="action-buttons">
+            <button class="btn btn-secondary" onclick="resetForm()">
+              <i class="fas fa-redo"></i> Reset
+            </button>
+            <button class="btn btn-primary" id="generateBtn" onclick="generateIDCard()">
+              <i class="fas fa-magic"></i> Generate ID
+            </button>
+            <button class="btn btn-primary" id="batchGenerateBtn" onclick="generateBatchPDF()">
+              <i class="fas fa-file-pdf"></i> Generate Batch PDF
+            </button>
+          </div>
+        </div>
+        
+        <div class="progress-bar" id="progressBar">
+          <div class="progress-bar-fill" id="progressBarFill"></div>
+        </div>
+        
+        <div class="loading-spinner" id="loadingSpinner">
+          <i class="fas fa-spinner"></i> Generating PDF...
+        </div>
+        
+        <div class="id-card-container" id="idCardContainer">
+          <div class="id-card" id="id-card">
+            <div class="id-card-front">
+              <h3>MUHANDU SECONDARY SCHOOL</h3>
+              <div class="id-card-content">
+                <div class="profile">
+                  <img id="id-photo" src="" alt="Student Photo">
+                </div>
+                <div class="details">
+                  <p><strong>Name:</strong> <span id="card-name" class="card-name">Student Name</span></p>
+                  <p><strong>ID Number:</strong> <span id="card-id">MSS00001</span></p>
+                  <p><strong>Date Issued:</strong> <span id="issue-date">Jan 1, 2023</span></p>
+                  <p><strong>Valid Until:</strong> <span id="valid-date">Dec 31, 2023</span></p>
+                </div>
+              </div>
+              <div class="signature">
+                <span>Signature</span>
+                <div class="signature-line"></div>
+              </div>
+              <div class="id-number"><span id="card-id-number">MSS00001</span></div>
+              <img id="id-stamp" class="stamp" src="" alt="School Stamp">
+              <div class="id-card-footer">© MUHANDU • Official Identification</div>
+              <button class="flip-btn" onclick="flipCard('id-card')">
+                <i class="fas fa-sync-alt"></i>
+              </button>
+            </div>
+            
+            <div class="id-card-back">
+              <div class="seal">MUHANDU<br>SECONDARY<br>SCHOOL</div>
+              <h3>STUDENT IDENTIFICATION</h3>
+              <div class="qr-code" id="qr-code"></div>
+              <div class="id-card-footer">Scan QR code for verification</div>
+              <button class="flip-btn" onclick="flipCard('id-card')">
+                <i class="fas fa-sync-alt"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="action-buttons" id="outputActions" style="display: none;">
+          <button class="btn btn-secondary" onclick="window.print()">
+            <i class="fas fa-print"></i> Print ID Card
+          </button>
+          <button class="btn btn-primary" onclick="downloadIDCard()">
+            <i class="fas fa-download"></i> Download Image
+          </button>
+          <button class="btn btn-primary" onclick="downloadPDF()">
+            <i class="fas fa-file-pdf"></i> Download PDF
+          </button>
+        </div>
+      </div>
     </div>
-    <div onclick="copyInviteLink()"><i class="fas fa-share"></i>Invite</div>
-  </div>
-
-  <div class="penguin-pixel" id="penguin-content">
-    <h3>Penguin Pixel: Mascot</h3>
-    <p>Penguin Pixel is the beloved mascot of the Penguin Pixel Network, embodying the spirit of accessibility, community, and innovation. Designed as a pixelated, friendly penguin, this digital character represents the inclusive nature of the Penguin Pixel Network, a cryptocurrency platform that allows anyone with a smartphone to mine and engage with digital assets.</p>
-    <div class="highlight">
-      <strong>Why a Penguin?</strong> Penguins are known for their resilience, teamwork, and adaptability—qualities that resonate with the Penguin Pixel Network's mission to create a decentralized, user-friendly financial ecosystem. The pixelated design nods to the digital and blockchain world, blending retro gaming aesthetics with modern technology.
-    </div>
-    <p>Penguin Pixel is more than just a mascot. It's a collectible digital asset available as a non-fungible token (NFT) on the Penguin Pixel Network's Global Market. Users can earn, trade, or purchase unique Penguin Pixel NFTs, each with distinct traits, such as special hats, accessories, or backgrounds. These NFTs can be used in the ecosystem for staking, rewards, or as profile avatars to showcase your involvement in the community.</p>
-    <p>Additionally, Penguin Pixel plays a key role in the Penguin Pixel Network's educational initiatives. Through interactive tutorials and gamified challenges, Penguin Pixel guides new users on how to mine PXL, secure their wallets, and participate in the ecosystem. The mascot also appears in community events, social media campaigns, and exclusive merchandise, fostering a sense of unity among Pioneers worldwide.</p>
-    <a href="#" class="cta" onclick="showModal('NFTs', 'Explore Penguin Pixel NFTs in the Market!')">Discover Penguin Pixel NFTs</a>
-  </div>
-
-  <div class="tap-wheel" id="tap-wheel">
-    <h3>Tap to Earn</h3>
-    <div class="wheel-container" onclick="tapWheel()">
-      <div class="wheel" id="wheel"><i class="fas fa-paw"></i></div>
-      <div class="particles" id="particles"></div>
-    </div>
-    <div class="tap-counter">Earn 0.5 PXL per tap!</div>
-  </div>
-
-  <div class="modal" id="modal">
-    <div class="modal-content">
-      <h3 id="modal-title"></h3>
-      <p id="modal-message"></p>
-      <button onclick="closeModal()">OK</button>
-    </div>
-  </div>
-
-  <div class="footer">
-    <div class="footer-item active" onclick="navigate('home')"><i class="fas fa-home"></i><span>Home</span></div>
-    <div class="footer-item" onclick="navigate('wallet')"><i class="fas fa-wallet"></i><span>Wallet</span><div class="tooltip">Coming Soon</div></div>
-    <div class="footer-item" onclick="navigate('market')"><i class="fas fa-store"></i><span>Market</span><div class="tooltip">Coming Soon</div></div>
-    <div class="footer-item" onclick="navigate('tap')"><i class="fas fa-hand-pointer"></i><span>Tap</span></div>
   </div>
 
   <script>
-    const USER_ID = 'user123';
-    const MINING_PERIOD_SECONDS = 24 * 60 * 60; // 24 hours in seconds
-    const TAP_COOLDOWN = 300; // 300ms cooldown between taps
+    // Initialize jsPDF
+    const { jsPDF } = window.jspdf;
 
-    let userData = { minedTokens: 0, miningStartTime: 0 };
-    let isMining = false;
-    let miningInterval = null;
-    let miningSeconds = 0;
-    let lastTapTime = 0;
-    const miningRatePerHour = 1;
-    const miningRatePerSecond = miningRatePerHour / 3600;
+    // Store student data and assets
+    let students = [];
+    let selectedStudentIndices = [];
+    let studentPhotos = {};
+    let studentStamps = {};
+    let inputMode = 'excel';
+    let nextId = 1;
 
-    // Local Storage Functions
-    function loadUserData() {
-      const data = localStorage.getItem(`pxl_user_${USER_ID}`);
-      if (data) {
-        userData = JSON.parse(data);
-        userData.minedTokens = userData.minedTokens || 0;
-        userData.miningStartTime = userData.miningStartTime || 0;
+    // Function to adjust name font size based on length
+    function adjustNameFontSize(name, element) {
+      const length = name.length;
+      let fontSize = '0.7rem';
+      let isLongName = false;
+
+      if (length > 15) {
+        fontSize = `${Math.max(0.45, 0.7 - (length - 15) * 0.03)}rem`;
       }
-      updateBalanceDisplay();
-      if (userData.miningStartTime > 0) {
-        const elapsed = (Date.now() - userData.miningStartTime) / 1000;
-        if (elapsed < MINING_PERIOD_SECONDS) {
-          startMining(userData.miningStartTime);
-        } else {
-          userData.miningStartTime = 0;
-          saveUserData();
-        }
-      }
-    }
-
-    function saveUserData() {
-      localStorage.setItem(`pxl_user_${USER_ID}`, JSON.stringify(userData));
-      updateBalanceDisplay();
-    }
-
-    function updateBalanceDisplay() {
-      document.getElementById('pxl-balance').textContent = userData.minedTokens.toFixed(3);
-    }
-
-    // Navigation
-    function navigate(page) {
-      document.querySelectorAll('.footer-item').forEach(item => item.classList.remove('active'));
-      event.currentTarget.classList.add('active');
-
-      const mainContent = document.getElementById('main-content');
-      const penguinContent = document.getElementById('penguin-content');
-      const tapWheel = document.getElementById('tap-wheel');
-      const sidebar = document.getElementById('sidebar');
-
-      mainContent.style.display = 'none';
-      penguinContent.style.display = 'none';
-      tapWheel.style.display = 'none';
-      sidebar.style.display = 'flex';
-
-      if (page === 'home') {
-        mainContent.style.display = 'flex';
-        penguinContent.style.display = 'block';
-      } else if (page === 'wallet' || page === 'market') {
-        showModal('Coming Soon', `${page.charAt(0).toUpperCase() + page.slice(1)} feature is coming soon!`);
-      } else if (page === 'tap') {
-        tapWheel.style.display = 'block';
-        sidebar.style.display = 'none';
-      }
-    }
-
-    // Sidebar Functions
-    function toggleSidebar() {
-      document.getElementById('sidebar').classList.toggle('hidden');
-    }
-
-    function changeLanguage(lang) {
-      document.getElementById('current-lang').textContent = lang;
-      console.log(`Language changed to ${lang}`);
-    }
-
-    function copyInviteLink() {
-      const inviteLink = 'https://penguinpixel.network/invite?code=yourcode';
-      navigator.clipboard.writeText(inviteLink).then(() => {
-        showModal('Invite Link', 'Invite link copied to clipboard!');
-      });
-    }
-
-    // Mining Functions
-    function toggleMining() {
-      if (isMining) {
-        stopMining();
+      if (length > 40) {
+        fontSize = '0.5rem';
+        isLongName = true;
+        element.classList.add('long-name');
       } else {
-        startMining();
+        element.classList.remove('long-name');
+      }
+
+      console.log(`Adjusting font size for name "${name}" (${length} chars): ${fontSize}`);
+      element.style.setProperty('--name-font-size', fontSize);
+      element.offsetHeight; // Force layout recalculation
+      return fontSize;
+    }
+
+    // Populate ID number dropdown for manual mode
+    function populateIDNumbers() {
+      const idNumberSelect = document.getElementById('idNumber');
+      idNumberSelect.innerHTML = '<option value="">Select ID Number</option>';
+      for (let i = 1; i <= 10000; i++) {
+        const formattedID = `MSS${i.toString().padStart(5, '0')}`;
+        const option = document.createElement('option');
+        option.value = formattedID;
+        option.textContent = formattedID;
+        idNumberSelect.appendChild(option);
       }
     }
 
-    function startMining(startTime = Date.now()) {
-      isMining = true;
-      userData.miningStartTime = startTime;
-      miningSeconds = Math.floor((Date.now() - startTime) / 1000);
-      initialMinedTokens = userData.minedTokens;
-      miningInterval = setInterval(updateMining, 100);
-      document.getElementById('mining-btn').classList.add('active');
-      saveUserData();
+    // Format ID dynamically
+    function formatID(index) {
+      return `MSS${(index + 1).toString().padStart(5, '0')}`;
     }
 
-    function stopMining() {
-      isMining = false;
-      userData.miningStartTime = 0;
-      document.getElementById('mining-counter').textContent = '00:00';
-      document.getElementById('mining-btn').classList.remove('active');
-      clearInterval(miningInterval);
-      saveUserData();
-      showModal('Mining Complete', '24-hour mining period has ended!');
-    }
+    // Toggle input mode
+    document.querySelectorAll('input[name="inputMode"]').forEach(radio => {
+      radio.addEventListener('change', function() {
+        inputMode = this.value;
+        document.getElementById('excelInputSection').style.display = inputMode === 'excel' ? 'block' : 'none';
+        document.getElementById('studentList').style.display = inputMode === 'excel' ? 'block' : 'none';
+        document.getElementById('name').value = '';
+        document.getElementById('name').disabled = inputMode === 'excel';
+        resetForm();
+      });
+    });
 
-    function updateMining() {
-      const now = Date.now();
-      const elapsedSeconds = (now - userData.miningStartTime) / 1000;
-
-      if (elapsedSeconds >= MINING_PERIOD_SECONDS) {
-        stopMining();
+    // Handle Excel file upload
+    document.getElementById('excelUpload').addEventListener('change', function(e) {
+      if (inputMode !== 'excel') return;
+      const file = e.target.files[0];
+      if (!file) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'No File Selected',
+          text: 'Please select an Excel file (.xlsx or .xls) to upload.',
+        });
         return;
       }
 
-      const earnedPxl = elapsedSeconds * miningRatePerSecond;
-      userData.minedTokens = initialMinedTokens + earnedPxl;
-      saveUserData();
-
-      miningSeconds = Math.floor(elapsedSeconds);
-      const minutes = Math.floor(miningSeconds / 60);
-      const seconds = miningSeconds % 60;
-      const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-      document.getElementById('mining-counter').textContent = formattedTime;
-    }
-
-    // Tap Wheel Functions
-    function tapWheel() {
-      const now = Date.now();
-      if (now - lastTapTime < TAP_COOLDOWN) return;
-      lastTapTime = now;
-
-      userData.minedTokens += 0.5;
-      saveUserData();
-
-      const wheel = document.getElementById('wheel');
-      wheel.classList.add('tapped');
-      setTimeout(() => wheel.classList.remove('tapped'), 1200);
-
-      createParticles();
-      showTapPopup();
-    }
-
-    function createParticles() {
-      const particlesContainer = document.getElementById('particles');
-      particlesContainer.innerHTML = '';
-
-      for (let i = 0; i < 20; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'particle';
-        const angle = Math.random() * 360;
-        const distance = 60 + Math.random() * 60;
-        const size = 6 + Math.random() * 6;
-        const color = Math.random() > 0.5 ? '#f0b90b' : '#b39fe6';
-        particle.style.setProperty('--x', `${Math.cos(angle * Math.PI / 180) * distance}px`);
-        particle.style.setProperty('--y', `${Math.sin(angle * Math.PI / 180) * distance}px`);
-        particle.style.setProperty('--size', `${size}px`);
-        particle.style.setProperty('--color', color);
-        particlesContainer.appendChild(particle);
+      if (!file.name.endsWith('.xlsx') && !file.name.endsWith('.xls')) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Invalid File Type',
+          text: 'Please upload a valid Excel file (.xlsx or .xls).',
+        });
+        return;
       }
 
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+          const sheetName = workbook.SheetNames[0];
+          const sheet = workbook.Sheets[sheetName];
+          students = XLSX.utils.sheet_to_json(sheet);
+
+          let invalidEntries = 0;
+          nextId = 1;
+          students = students
+            .map((student, index) => {
+              if (!student.Name || typeof student.Name !== 'string' || !student.Name.trim()) {
+                invalidEntries++;
+                return null;
+              }
+              const formattedStudent = {
+                Name: student.Name.trim(),
+                ID: student.ID && typeof student.ID === 'string' && student.ID.trim()
+                  ? student.ID.trim()
+                  : formatID(index)
+              };
+              return formattedStudent;
+            })
+            .filter(student => student !== null);
+
+          students.sort((a, b) => a.ID.localeCompare(b.ID));
+
+          if (students.length === 0) {
+            Swal.fire({
+              icon: 'error',
+              title: 'No Valid Data',
+              text: 'No valid student data found. Ensure the Excel file has a "Name" column with valid entries.',
+            });
+            return;
+          }
+
+          if (invalidEntries > 0) {
+            Swal.fire({
+              icon: 'warning',
+              title: 'Invalid Entries Skipped',
+              text: `${invalidEntries} invalid entries were skipped due to missing or invalid Name.`,
+            });
+          }
+
+          const studentList = document.getElementById('studentList');
+          studentList.innerHTML = '';
+          students.forEach((student, index) => {
+            const div = document.createElement('div');
+            div.className = 'student-list-item';
+            div.innerHTML = `
+              <label>
+                <input type="checkbox" class="student-checkbox" data-index="${index}">
+                <span>${student.Name}</span>
+                <span class="student-id">${student.ID}</span>
+              </label>
+              <div class="file-input-wrapper">
+                <button class="photo-upload-btn">
+                  <i class="fas fa-upload"></i> Photo
+                </button>
+                <input type="file" class="student-photo-upload" data-index="${index}" accept="image/*">
+              </div>
+            `;
+            studentList.appendChild(div);
+          });
+
+          document.querySelectorAll('.student-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', updateSelectedStudents);
+          });
+
+          document.querySelectorAll('.student-photo-upload').forEach(input => {
+            input.addEventListener('change', handleStudentPhotoUpload);
+          });
+
+          document.getElementById('selectAll').addEventListener('change', function() {
+            const checkboxes = document.querySelectorAll('.student-checkbox');
+            checkboxes.forEach(checkbox => {
+              checkbox.checked = this.checked;
+            });
+            updateSelectedStudents();
+          });
+
+          Swal.fire({
+            icon: 'success',
+            title: 'Data Loaded',
+            text: `${students.length} valid students loaded successfully!`,
+          });
+          console.log('Loaded students:', students);
+        } catch (error) {
+          console.error('Error parsing Excel file:', error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Parsing Error',
+            text: 'Failed to parse Excel file. Ensure it is a valid .xlsx or .xls file with a "Name" column.',
+          });
+        }
+      };
+      reader.onerror = function() {
+        Swal.fire({
+          icon: 'error',
+          title: 'File Read Error',
+          text: 'Error reading the Excel file. Please try again.',
+        });
+      };
+      reader.readAsArrayBuffer(file);
+    });
+
+    function updateSelectedStudents() {
+      selectedStudentIndices = [];
+      document.querySelectorAll('.student-checkbox:checked').forEach(checkbox => {
+        selectedStudentIndices.push(parseInt(checkbox.dataset.index));
+      });
+      console.log('Selected students:', selectedStudentIndices);
+    }
+
+    function handleStudentPhotoUpload(e) {
+      const index = parseInt(e.target.dataset.index);
+      const file = e.target.files[0];
+      if (!file) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'No Photo Selected',
+          text: 'Please select a photo to upload for the student.',
+        });
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        studentPhotos[index] = e.target.result;
+        Swal.fire({
+          icon: 'success',
+          title: 'Photo Uploaded',
+          text: `Photo uploaded successfully for ${students[index].Name}.`,
+        });
+        console.log(`Photo uploaded for student ${index}:`, e.target.result);
+      };
+      reader.onerror = function() {
+        Swal.fire({
+          icon: 'error',
+          title: 'Photo Read Error',
+          text: 'Error reading the photo. Please try again.',
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+
+    document.getElementById('stamp').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const preview = document.getElementById('stampPreview');
+          preview.innerHTML = `<img src="${e.target.result}" alt="School Stamp">`;
+          studentStamps['current'] = e.target.result;
+          Swal.fire({
+            icon: 'success',
+            title: 'Stamp Uploaded',
+            text: 'School stamp uploaded successfully.',
+          });
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    function flipCard(cardId) {
+      document.getElementById(cardId).classList.toggle('flipped');
+    }
+
+    // Generate QR code and return a promise
+    function generateQRCode(element, text) {
+      return new Promise((resolve, reject) => {
+        element.innerHTML = '';
+        const canvas = document.createElement('canvas');
+        canvas.width = 110;
+        canvas.height = 110;
+        element.appendChild(canvas);
+        QRCode.toCanvas(canvas, text, {
+          width: 110,
+          margin: 1,
+          color: { dark: '#000000', light: '#ffffff' },
+          errorCorrectionLevel: 'H'
+        }, function(error) {
+          if (error) {
+            console.error('QR Code generation error:', error);
+            reject(new Error('Failed to generate QR code'));
+          } else {
+            setTimeout(() => resolve(canvas), 50);
+          }
+        });
+      });
+    }
+
+    async function generateIDCard() {
+      let name, idNumber;
+      if (inputMode === 'excel' && selectedStudentIndices.length > 0) {
+        const index = selectedStudentIndices[0];
+        name = students[index].Name;
+        idNumber = students[index].ID;
+      } else {
+        name = document.getElementById('name').value.trim();
+        idNumber = document.getElementById('idNumber').value;
+      }
+
+      const issueDate = document.getElementById('issueDate').value;
+      const validDate = document.getElementById('validDate').value;
+      const photoSrc = inputMode === 'excel' ? studentPhotos[selectedStudentIndices[0]] : studentPhotos['current'];
+      const stampSrc = studentStamps['current'] || '';
+
+      if (!name || !idNumber || !issueDate || !validDate || !photoSrc) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Missing Information',
+          text: 'Please provide all required fields: Name, ID Number, Issue Date, Valid Until, and Photo.',
+        });
+        return;
+      }
+
+      const issueDateObj = new Date(issueDate);
+      const validDateObj = new Date(validDate);
+      const formattedIssueDate = issueDateObj.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+      const formattedValidDate = validDateObj.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+
+      const cardNameElement = document.getElementById('card-name');
+      cardNameElement.textContent = name;
+      adjustNameFontSize(name, cardNameElement);
+      await new Promise(resolve => setTimeout(resolve, 50)); // Ensure layout update
+      document.getElementById('card-id').textContent = idNumber;
+      document.getElementById('card-id-number').textContent = idNumber;
+      document.getElementById('issue-date').textContent = formattedIssueDate;
+      document.getElementById('valid-date').textContent = formattedValidDate;
+      document.getElementById('id-photo').src = photoSrc;
+      document.getElementById('id-stamp').src = stampSrc;
+
+      const photoImg = document.getElementById('id-photo');
+      await new Promise(resolve => {
+        if (photoImg.complete && photoImg.naturalWidth !== 0) {
+          resolve();
+        } else {
+          photoImg.onload = resolve;
+          photoImg.onerror = () => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Photo Load Error',
+              text: 'Failed to load student photo. Please try again.',
+            });
+            resolve();
+          };
+        }
+      });
+
+      const stampImg = document.getElementById('id-stamp');
+      if (stampSrc) {
+        await new Promise(resolve => {
+          if (stampImg.complete && stampImg.naturalWidth !== 0) {
+            resolve();
+          } else {
+            stampImg.onload = resolve;
+            stampImg.onerror = () => {
+              console.warn('Failed to load stamp image.');
+              resolve();
+            };
+          }
+        });
+      }
+
+      const qrCodeElement = document.getElementById('qr-code');
+      try {
+        await generateQRCode(qrCodeElement, `MUHANDU ID CARD\nName: ${name}\nID: ${idNumber}\nValid Until: ${formattedValidDate}`);
+      } catch (error) {
+        Swal.fire({
+          icon: 'error',
+          title: 'QR Code Error',
+          text: 'Failed to generate QR code. Please try again.',
+        });
+        return;
+      }
+
+      qrCodeElement.style.display = 'none';
+      qrCodeElement.offsetHeight;
+      qrCodeElement.style.display = 'flex';
+
+      const idCard = document.getElementById('id-card');
+      idCard.style.display = 'block';
+      idCard.classList.add('card-animation');
+      document.getElementById('outputActions').style.display = 'flex';
+
       setTimeout(() => {
-        particlesContainer.innerHTML = '';
-      }, 600);
+        idCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 500);
+
+      Swal.fire({
+        icon: 'success',
+        title: 'ID Card Generated',
+        text: `ID card for ${name} generated successfully!`,
+      });
+      console.log('ID card generated for:', { name, idNumber, issueDate, validDate });
     }
 
-    function showTapPopup() {
-      const wheelContainer = document.querySelector('.wheel-container');
-      const popup = document.createElement('div');
-      popup.className = 'tap-popup';
-      popup.textContent = '+0.5 PXL';
-      wheelContainer.appendChild(popup);
-      setTimeout(() => popup.remove(), 1000);
+    async function generateBatchPDF() {
+      if (inputMode !== 'excel' || selectedStudentIndices.length === 0) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'No Students Selected',
+          text: 'Please select at least one student in Excel mode.',
+        });
+        return;
+      }
+
+      const missingPhotos = selectedStudentIndices.filter(index => !studentPhotos[index]);
+      if (missingPhotos.length > 0) {
+        const missingNames = missingPhotos.map(index => students[index].Name).join(', ');
+        Swal.fire({
+          icon: 'warning',
+          title: 'Missing Photos',
+          text: `Please upload photos for all selected students: ${missingNames}.`,
+        });
+        return;
+      }
+
+      const issueDate = document.getElementById('issueDate').value;
+      const validDate = document.getElementById('validDate').value;
+      if (!issueDate || !validDate) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Missing Dates',
+          text: 'Please provide both Issue Date and Valid Until dates.',
+        });
+        return;
+      }
+
+      const loadingSpinner = document.getElementById('loadingSpinner');
+      loadingSpinner.style.display = 'block';
+      const progressBar = document.getElementById('progressBar');
+      const progressBarFill = document.getElementById('progressBarFill');
+      progressBar.style.display = 'block';
+
+      const pdf = new jsPDF({
+        orientation: 'landscape',
+        unit: 'mm',
+        format: [105, 65]
+      });
+
+      for (let i = 0; i < selectedStudentIndices.length; i++) {
+        const index = selectedStudentIndices[i];
+        const student = students[index];
+        const cardId = `id-card-${index}`;
+        const cardContainer = document.getElementById('idCardContainer');
+
+        console.log(`Generating card for ${student.Name} (ID: ${student.ID})`);
+
+        const tempCard = document.createElement('div');
+        tempCard.className = 'id-card pdf-rendering';
+        tempCard.id = cardId;
+        tempCard.style.display = 'block';
+        tempCard.style.position = 'absolute';
+        tempCard.style.left = '-9999px';
+        tempCard.style.width = '350px';
+        tempCard.style.height = '220px';
+        tempCard.innerHTML = `
+          <div class="id-card-front">
+            <h3>MUHANDU SECONDARY SCHOOL</h3>
+            <div class="id-card-content">
+              <div class="profile">
+                <img id="id-photo-${index}" src="${studentPhotos[index]}" alt="Student Photo">
+              </div>
+              <div class="details">
+                <p><strong>Name:</strong> <span id="card-name-${index}" class="card-name">${student.Name}</span></p>
+                <p><strong>ID Number:</strong> <span id="card-id-${index}">${student.ID}</span></p>
+                <p><strong>Date Issued:</strong> <span id="issue-date-${index}">${new Date(issueDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</span></p>
+                <p><strong>Valid Until:</strong> <span id="valid-date-${index}">${new Date(validDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</span></p>
+              </div>
+            </div>
+            <div class="signature">
+              <span>Signature</span>
+              <div class="signature-line"></div>
+            </div>
+            <div class="id-number"><span id="card-id-number-${index}">${student.ID}</span></div>
+            <img id="id-stamp-${index}" class="stamp" src="${studentStamps['current'] || ''}" alt="School Stamp">
+            <div class="id-card-footer">© MUHANDU • Official Identification</div>
+          </div>
+          <div class="id-card-back">
+            <div class="seal">MUHANDU<br>SECONDARY<br>SCHOOL</div>
+            <h3>STUDENT IDENTIFICATION</h3>
+            <div class="qr-code" id="qr-code-${index}"></div>
+            <div class="id-card-footer">Scan QR code for verification</div>
+          </div>
+        `;
+        cardContainer.appendChild(tempCard);
+
+        const nameElement = document.getElementById(`card-name-${index}`);
+        adjustNameFontSize(student.Name, nameElement);
+        await new Promise(resolve => setTimeout(resolve, 50)); // Ensure layout update
+        nameElement.offsetHeight; // Force layout recalculation
+        console.log(`Layout updated for ${student.Name}`);
+
+        const photoImg = document.getElementById(`id-photo-${index}`);
+        await new Promise(resolve => {
+          if (photoImg.complete && photoImg.naturalWidth !== 0) {
+            resolve();
+          } else {
+            photoImg.onload = resolve;
+            photoImg.onerror = () => {
+              Swal.fire({
+                icon: 'error',
+                title: 'Photo Load Error',
+                text: `Failed to load photo for ${student.Name}. Skipping this card.`,
+              });
+              resolve();
+            };
+          }
+        });
+
+        const stampImg = document.getElementById(`id-stamp-${index}`);
+        if (studentStamps['current']) {
+          await new Promise(resolve => {
+            if (stampImg.complete && stampImg.naturalWidth !== 0) {
+              resolve();
+            } else {
+              stampImg.onload = resolve;
+              stampImg.onerror = () => {
+                console.warn(`Failed to load stamp for ${student.Name}.`);
+                resolve();
+              };
+            }
+          });
+        }
+
+        const qrCodeElement = document.getElementById(`qr-code-${index}`);
+        try {
+          await generateQRCode(qrCodeElement, `MUHANDU ID CARD\nName: ${student.Name}\nID: ${student.ID}\nValid Until: ${new Date(validDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}`);
+        } catch (error) {
+          Swal.fire({
+            icon: 'error',
+            title: 'QR Code Error',
+            text: `Failed to generate QR code for ${student.Name}. Skipping this card.`,
+          });
+          cardContainer.removeChild(tempCard);
+          continue;
+        }
+
+        qrCodeElement.style.display = 'none';
+        qrCodeElement.offsetHeight;
+        qrCodeElement.style.display = 'flex';
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        try {
+          const frontElement = document.getElementById(cardId).querySelector('.id-card-front');
+          frontElement.offsetHeight; // Force layout recalculation
+          console.log(`Rendering front for ${student.Name}`);
+          const frontCanvas = await html2canvas(frontElement, {
+            scale: 4,
+            useCORS: true,
+            backgroundColor: null,
+            width: 350,
+            height: 220,
+            windowWidth: 350,
+            windowHeight: 220,
+            x: 0,
+            y: 0
+          });
+          const frontImgData = frontCanvas.toDataURL('image/png');
+          pdf.addImage(frontImgData, 'PNG', 6.5, 3.5, 92, 58);
+          pdf.addPage();
+
+          const backElement = document.getElementById(cardId).querySelector('.id-card-back');
+          backElement.style.transform = 'none';
+          backElement.offsetHeight; // Force layout recalculation
+          console.log(`Rendering back for ${student.Name}`);
+          const backCanvas = await html2canvas(backElement, {
+            scale: 4,
+            useCORS: true,
+            backgroundColor: null,
+            width: 350,
+            height: 220,
+            windowWidth: 350,
+            windowHeight: 220,
+            x: 0,
+            y: 0
+          });
+          const backImgData = backCanvas.toDataURL('image/png');
+          pdf.addImage(backImgData, 'PNG', 6.5, 3.5, 92, 58);
+          backElement.style.transform = 'rotateY(180deg)';
+
+          if (i < selectedStudentIndices.length - 1) {
+            pdf.addPage();
+          }
+
+          const progress = ((i + 1) / selectedStudentIndices.length) * 100;
+          progressBarFill.style.width = `${progress}%`;
+        } catch (error) {
+          console.error(`Error rendering card for ${student.Name}:`, error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Rendering Error',
+            text: `Failed to render ID card for ${student.Name}. Skipping this card.`,
+          });
+        }
+
+        cardContainer.removeChild(tempCard);
+      }
+
+      pdf.save('student-id-cards.pdf');
+      progressBar.style.display = 'none';
+      progressBarFill.style.width = '0%';
+      loadingSpinner.style.display = 'none';
+      Swal.fire({
+        icon: 'success',
+        title: 'Batch PDF Generated',
+        text: `Batch PDF generated for ${selectedStudentIndices.length} students successfully!`,
+      });
+      console.log('Batch PDF generated for', selectedStudentIndices.length, 'students');
     }
 
-    // Modal Functions
-    function showModal(title, message) {
-      document.getElementById('modal-title').textContent = title;
-      document.getElementById('modal-message').textContent = message;
-      document.getElementById('modal').style.display = 'flex';
+    async function downloadIDCard() {
+      const idCard = document.getElementById('id-card');
+      idCard.classList.remove('card-animation');
+      idCard.classList.add('pdf-rendering');
+
+      const nameElement = document.getElementById('card-name');
+      const originalFontSize = adjustNameFontSize(nameElement.textContent, nameElement);
+      nameElement.offsetHeight; // Force layout recalculation
+      await new Promise(resolve => setTimeout(resolve, 50));
+
+      const qrCodeElement = document.getElementById('qr-code');
+      qrCodeElement.style.display = 'none';
+      qrCodeElement.offsetHeight;
+      qrCodeElement.style.display = 'flex';
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      try {
+        const frontElement = document.querySelector('.id-card-front');
+        frontElement.offsetHeight; // Force layout recalculation
+        console.log(`Rendering front for image download`);
+        const frontCanvas = await html2canvas(frontElement, {
+          scale: 4,
+          useCORS: true,
+          backgroundColor: null,
+          width: 350,
+          height: 220,
+          windowWidth: 350,
+          windowHeight: 220,
+          x: 0,
+          y: 0
+        });
+
+        const backElement = document.querySelector('.id-card-back');
+        backElement.style.transform = 'none';
+        backElement.offsetHeight; // Force layout recalculation
+        console.log(`Rendering back for image download`);
+        const backCanvas = await html2canvas(backElement, {
+          scale: 4,
+          useCORS: true,
+          backgroundColor: null,
+          width: 350,
+          height: 220,
+          windowWidth: 350,
+          windowHeight: 220,
+          x: 0,
+          y: 0
+        });
+        backElement.style.transform = 'rotateY(180deg)';
+
+        const combinedCanvas = document.createElement('canvas');
+        combinedCanvas.width = frontCanvas.width + backCanvas.width + 20;
+        combinedCanvas.height = Math.max(frontCanvas.height, backCanvas.height);
+        const ctx = combinedCanvas.getContext('2d');
+        
+        ctx.fillStyle = '#FDFDF6';
+        ctx.fillRect(0, 0, combinedCanvas.width, combinedCanvas.height);
+        ctx.drawImage(frontCanvas, 0, 0);
+        ctx.drawImage(backCanvas, frontCanvas.width + 20, 0);
+        
+        const link = document.createElement('a');
+        link.download = `student-id-card-${document.getElementById('card-id-number').textContent}.png`;
+        link.href = combinedCanvas.toDataURL('image/png');
+        link.click();
+        
+        idCard.classList.remove('pdf-rendering');
+        nameElement.style.setProperty('--name-font-size', '0.7rem');
+        setTimeout(() => {
+          idCard.classList.add('card-animation');
+        }, 100);
+        Swal.fire({
+          icon: 'success',
+          title: 'Image Downloaded',
+          text: `ID card image downloaded successfully!`,
+        });
+      } catch (error) {
+        console.error('Error downloading ID card image:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Image Rendering Error',
+          text: 'Failed to render ID card image. Please try again.',
+        });
+        nameElement.style.setProperty('--name-font-size', '0.7rem');
+      }
     }
 
-    function closeModal() {
-      document.getElementById('modal').style.display = 'none';
+    async function downloadPDF() {
+      if (inputMode === 'excel' && selectedStudentIndices.length > 0) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Invalid Mode',
+          text: 'Please use Batch PDF generation for Excel mode or switch to Manual Input mode.',
+        });
+        return;
+      }
+
+      const name = document.getElementById('name').value.trim();
+      const idNumber = document.getElementById('idNumber').value;
+      const issueDate = document.getElementById('issueDate').value;
+      const validDate = document.getElementById('validDate').value;
+      const photoSrc = studentPhotos['current'];
+      const stampSrc = studentStamps['current'] || '';
+
+      if (!name || !idNumber || !issueDate || !validDate || !photoSrc) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Missing Information',
+          text: 'Please provide all required fields: Name, ID Number, Issue Date, Valid Until, and Photo.',
+        });
+        return;
+      }
+
+      const formattedIssueDate = new Date(issueDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+      const formattedValidDate = new Date(validDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+
+      const loadingSpinner = document.getElementById('loadingSpinner');
+      loadingSpinner.style.display = 'block';
+
+      const cardContainer = document.getElementById('idCardContainer');
+      const cardId = 'id-card-temp';
+      const tempCard = document.createElement('div');
+      tempCard.className = 'id-card pdf-rendering';
+      tempCard.id = cardId;
+      tempCard.style.display = 'block';
+      tempCard.style.position = 'absolute';
+      tempCard.style.left = '-9999px';
+      tempCard.style.width = '350px';
+      tempCard.style.height = '220px';
+      tempCard.innerHTML = `
+        <div class="id-card-front">
+          <h3>MUHANDU SECONDARY SCHOOL</h3>
+          <div class="id-card-content">
+            <div class="profile">
+              <img id="id-photo-temp" src="${photoSrc}" alt="Student Photo">
+            </div>
+            <div class="details">
+              <p><strong>Name:</strong> <span id="card-name-temp" class="card-name">${name}</span></p>
+              <p><strong>ID Number:</strong> <span id="card-id-temp">${idNumber}</span></p>
+              <p><strong>Date Issued:</strong> <span id="issue-date-temp">${formattedIssueDate}</span></p>
+              <p><strong>Valid Until:</strong> <span id="valid-date-temp">${formattedValidDate}</span></p>
+            </div>
+          </div>
+          <div class="signature">
+            <span>Signature</span>
+            <div class="signature-line"></div>
+          </div>
+          <div class="id-number"><span id="card-id-number-temp">${idNumber}</span></div>
+          <img id="id-stamp-temp" class="stamp" src="${stampSrc}" alt="School Stamp">
+          <div class="id-card-footer">© MUHANDU • Official Identification</div>
+        </div>
+        <div class="id-card-back">
+          <div class="seal">MUHANDU<br>SECONDARY<br>SCHOOL</div>
+          <h3>STUDENT IDENTIFICATION</h3>
+          <div class="qr-code" id="qr-code-temp"></div>
+          <div class="id-card-footer">Scan QR code for verification</div>
+        </div>
+      `;
+      cardContainer.appendChild(tempCard);
+
+      const nameElement = document.getElementById('card-name-temp');
+      adjustNameFontSize(name, nameElement);
+      await new Promise(resolve => setTimeout(resolve, 50)); // Ensure layout update
+      nameElement.offsetHeight; // Force layout recalculation
+      console.log(`Layout updated for manual input: ${name}`);
+
+      const photoImg = document.getElementById('id-photo-temp');
+      await new Promise(resolve => {
+        if (photoImg.complete && photoImg.naturalWidth !== 0) {
+          resolve();
+        } else {
+          photoImg.onload = resolve;
+          photoImg.onerror = () => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Photo Load Error',
+              text: `Failed to load photo for ${name}.`,
+            });
+            resolve();
+          };
+        }
+      });
+
+      const stampImg = document.getElementById('id-stamp-temp');
+      if (stampSrc) {
+        await new Promise(resolve => {
+          if (stampImg.complete && stampImg.naturalWidth !== 0) {
+            resolve();
+          } else {
+            stampImg.onload = resolve;
+            stampImg.onerror = () => {
+              console.warn(`Failed to load stamp for ${name}.`);
+              resolve();
+            };
+          }
+        });
+      }
+
+      const qrCodeElement = document.getElementById('qr-code-temp');
+      try {
+        await generateQRCode(qrCodeElement, `MUHANDU ID CARD\nName: ${name}\nID: ${idNumber}\nValid Until: ${formattedValidDate}`);
+      } catch (error) {
+        Swal.fire({
+          icon: 'error',
+          title: 'QR Code Error',
+          text: `Failed to generate QR code for ${name}.`,
+        });
+        cardContainer.removeChild(tempCard);
+        loadingSpinner.style.display = 'none';
+        return;
+      }
+
+      qrCodeElement.style.display = 'none';
+      qrCodeElement.offsetHeight;
+      qrCodeElement.style.display = 'flex';
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      try {
+        const pdf = new jsPDF({
+          orientation: 'landscape',
+          unit: 'mm',
+          format: [105, 65]
+        });
+
+        const frontElement = tempCard.querySelector('.id-card-front');
+        frontElement.offsetHeight; // Force layout recalculation
+        console.log(`Rendering front for PDF download: ${name}`);
+        const frontCanvas = await html2canvas(frontElement, {
+          scale: 4,
+          useCORS: true,
+          backgroundColor: null,
+          width: 350,
+          height: 220,
+          windowWidth: 350,
+          windowHeight: 220,
+          x: 0,
+          y: 0
+        });
+        const frontImgData = frontCanvas.toDataURL('image/png');
+        pdf.addImage(frontImgData, 'PNG', 6.5, 3.5, 92, 58);
+        
+        pdf.addPage();
+
+        const backElement = tempCard.querySelector('.id-card-back');
+        backElement.style.transform = 'none';
+        backElement.offsetHeight; // Force layout recalculation
+        console.log(`Rendering back for PDF download: ${name}`);
+        const backCanvas = await html2canvas(backElement, {
+          scale: 4,
+          useCORS: true,
+          backgroundColor: null,
+          width: 350,
+          height: 220,
+          windowWidth: 350,
+          windowHeight: 220,
+          x: 0,
+          y: 0
+        });
+        const backImgData = backCanvas.toDataURL('image/png');
+        pdf.addImage(backImgData, 'PNG', 6.5, 3.5, 92, 58);
+        backElement.style.transform = 'rotateY(180deg)';
+
+        pdf.save(`student-id-card-${idNumber}.pdf`);
+        
+        cardContainer.removeChild(tempCard);
+        loadingSpinner.style.display = 'none';
+        Swal.fire({
+          icon: 'success',
+          title: 'PDF Downloaded',
+          text: `ID card PDF for ${name} downloaded successfully with front and back pages!`,
+        });
+        console.log(`PDF generated for manual input: ${name} (ID: ${idNumber})`);
+      } catch (error) {
+        console.error('Error downloading PDF:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'PDF Rendering Error',
+          text: 'Failed to render ID card PDF. Please try again.',
+        });
+        cardContainer.removeChild(tempCard);
+        loadingSpinner.style.display = 'none';
+      }
     }
 
-    // Initialize
-    window.onload = () => {
-      loadUserData();
-      navigate('home');
+    function resetForm() {
+      document.getElementById('name').value = '';
+      document.getElementById('idNumber').value = '';
+      document.getElementById('issueDate').value = '';
+      document.getElementById('validDate').value = '';
+      document.getElementById('photo').value = '';
+      document.getElementById('stamp').value = '';
+      document.getElementById('excelUpload').value = '';
+      document.getElementById('photoPreview').innerHTML = '<i class="fas fa-user-circle" style="font-size: 3rem; color: #ccc;"></i>';
+      document.getElementById('stampPreview').innerHTML = '<i class="fas fa-stamp" style="font-size: 3rem; color: #ccc;"></i>';
+      document.getElementById('studentList').innerHTML = '<div class="student-list-item">No students loaded</div>';
+      document.getElementById('outputActions').style.display = 'none';
+      document.getElementById('id-card').style.display = 'none';
+      document.getElementById('id-card').classList.remove('flipped');
+      document.getElementById('progressBar').style.display = 'none';
+      document.getElementById('progressBarFill').style.width = '0%';
+      document.getElementById('loadingSpinner').style.display = 'none';
+      
+      document.getElementById('card-name').textContent = 'Student Name';
+      document.getElementById('card-name').style.setProperty('--name-font-size', '0.7rem');
+      document.getElementById('card-name').classList.remove('long-name');
+      document.getElementById('card-id').textContent = 'MSS00001';
+      document.getElementById('card-id-number').textContent = 'MSS00001';
+      document.getElementById('issue-date').textContent = 'Jan 1, 2023';
+      document.getElementById('valid-date').textContent = 'Dec 31, 2023';
+      document.getElementById('id-photo').src = '';
+      document.getElementById('id-stamp').src = '';
+      document.getElementById('qr-code').innerHTML = '';
+      
+      students = [];
+      selectedStudentIndices = [];
+      studentPhotos = {};
+      studentStamps = {};
+      nextId = 1;
+      document.getElementById('selectAll').checked = false;
+      populateIDNumbers();
+      Swal.fire({
+        icon: 'info',
+        title: 'Form Reset',
+        text: 'All fields have been reset successfully.',
+      });
+      console.log('Form reset');
+    }
+
+    document.getElementById('photo').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (!file) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'No Photo Selected',
+          text: 'Please select a photo to upload for the student.',
+        });
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const photoPreview = document.getElementById('photoPreview');
+        photoPreview.innerHTML = `<img src="${e.target.result}" alt="Student Photo">`;
+        studentPhotos['current'] = e.target.result;
+        Swal.fire({
+          icon: 'success',
+          title: 'Photo Uploaded',
+          text: 'Student photo uploaded successfully.',
+        });
+        console.log('Manual photo uploaded:', e.target.result);
+      };
+      reader.onerror = function() {
+        Swal.fire({
+          icon: 'error',
+          title: 'Photo Read Error',
+          text: 'Error reading the photo. Please try again.',
+        });
+      };
+      reader.readAsDataURL(file);
+    });
+
+    window.onload = function() {
+      const today = new Date();
+      const nextYear = new Date();
+      nextYear.setFullYear(today.getFullYear() + 1);
+      
+      document.getElementById('issueDate').valueAsDate = today;
+      document.getElementById('validDate').valueAsDate = nextYear;
+      populateIDNumbers();
     };
   </script>
 </body>
